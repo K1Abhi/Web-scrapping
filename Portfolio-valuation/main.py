@@ -11,13 +11,30 @@ def get_price_information(ticker, exchange):
     price = float(price_div["data-last-price"])
     currency = price_div["data-currency-code"]
 
+    usd_price = price
+    if currency != 'USD':
+        fx = get_fx_to_usd(currency)
+        usd_price = round(price * fx, 2)
+
     return {
         "ticker": ticker,
         "exchange": exchange,
         "price": price,
-        "currency": currency
+        "currency": currency,
+        "USD-PRICE": usd_price
     }
 
 
+def get_fx_to_usd(currency):
+    fx_url = f'https://www.google.com/finance/quote/{currency}-USD'
+    resp = r.get(fx_url)
+    soup = BeautifulSoup(resp.content, "html.parser")
+
+    fx_rate = soup.find("div", attrs={"data-last-price": True})
+    fx = float(fx_rate["data-last-price"])
+
+    return fx
+
+
 if __name__ == "__main__":
-    print(get_price_information("MSFT", "NASDAQ"))
+    print(get_price_information("JINDALSTEL", "NSE"))
