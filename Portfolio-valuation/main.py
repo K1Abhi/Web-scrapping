@@ -1,6 +1,22 @@
+from dataclasses import dataclass
 import requests as r
 from bs4 import BeautifulSoup
 
+@dataclass
+class stock:
+    ticker : str
+    exchange: str
+    price: float = 0
+    currency: str = "USD"
+    usd_price: float = 0
+
+    def __post_init__(self):
+        price_info = get_price_information(self.ticker, self.exchange)
+
+        if price_info["ticker"] == self.ticker:
+            self.price = price_info["price"]
+            self.currency = price_info["currency"]
+            self.usd_price = price_info["USD-PRICE"]
 
 def get_price_information(ticker, exchange):
     url = f"https://www.google.com/finance/quote/{ticker}:{exchange}"
@@ -37,4 +53,4 @@ def get_fx_to_usd(currency):
 
 
 if __name__ == "__main__":
-    print(get_price_information("JINDALSTEL", "NSE"))
+    print(stock("M&M", "NSE"))
